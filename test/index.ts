@@ -3,6 +3,7 @@ import * as E from 'fp-ts/lib/Either'
 import { fieldNumber } from 'fp-ts/lib/Field'
 import { monoidString, monoidSum } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
+import * as N from '../src/Nullable'
 import { ordNumber } from 'fp-ts/lib/Ord'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 import { eqNumber, eqString } from 'fp-ts/lib/Eq'
@@ -86,6 +87,14 @@ describe('applicative', () => {
 describe('monad', () => {
   it('should test Monad laws', () => {
     laws.monad(O.option)(O.getEq)
+    laws.monad(E.either)(S => E.getEq(eqString, S))
+    laws.monad(E.getValidation(monoidString))(S => E.getEq(eqString, S))
+  })
+})
+
+describe('non-monad', () => {
+  it('should test Monad laws', () => {
+    laws.monad(N.Monad)(eq => ({equals: (x, y) => x === null && y === null ? true : x !== null && y !== null ? eq.equals(x, y) : false}))
     laws.monad(E.either)(S => E.getEq(eqString, S))
     laws.monad(E.getValidation(monoidString))(S => E.getEq(eqString, S))
   })
